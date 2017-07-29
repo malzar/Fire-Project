@@ -9,22 +9,36 @@ public class Character : MonoBehaviour {
     public float _Speed;
     public int _DirectionRotation;
 
-	// Use this for initialization
-	void Start () {
-	}
-	
-	// Update is called once per frame
-	void Update () {
-
-        transform.position += _Direcction * _Speed;
-		
-	}
-
-    void SetDirection(Vector3 Direction){
-        _Direcction = Direction;
+    // Use this for initialization
+    void Start() {
     }
 
-    void OnTriggerEnter(Collider other){
+    // Update is called once per frame
+    void Update() {
+
+        transform.position += _Direcction * _Speed * Time.deltaTime;
+
+    }
+
+
+
+    void OnTriggerEnter(Collider other) {
+        if (other.tag == "Wall") {
+            RotateCharacter();
+        } else if (other.tag == "Cell") {
+            SetDirection(other.GetComponent<Cell>().GetDirection());
+        }
+
+    }
+
+    private void SetDirection(Vector3 Direction) {
+        _Direcction = Direction;
+        if (Mathf.Abs(Direction.x) == 1) {
+
+        }
+    }
+
+    private void RotateCharacter() {
         //posible caos si metemos random para direccion
         _DirectionRotation += 90;
         _DirectionRotation = Mathf.Abs(_DirectionRotation) % 360;
