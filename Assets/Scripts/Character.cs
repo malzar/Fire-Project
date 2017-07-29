@@ -22,9 +22,7 @@ public class Character : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-
-        transform.position += _Direcction * _Speed * Time.deltaTime;
-        
+        transform.position += this.transform.forward * _Speed * Time.deltaTime;        
     }
 
 
@@ -52,11 +50,9 @@ public class Character : MonoBehaviour {
     }
 
     private void SetDirection(Vector3 Direction) {
-        Vector3 dirToLook;
-        _Direcction = Direction;
-        int rotation = (int) (Direction.x * 10 + Direction.z);
 
-        
+        int rotation = (int) (Direction.x * 10 + Direction.z);
+                
         switch (rotation) {
             case 10:
                 transform.rotation = Quaternion.Euler(0, 90f, 0);
@@ -77,10 +73,7 @@ public class Character : MonoBehaviour {
     }
 
     private void RotateCharacter() {
-        //posible caos si metemos random para direccion
-        _DirectionRotation += 90;
-        _DirectionRotation = Mathf.Abs(_DirectionRotation) % 360;
-        _Direcction = new Vector3(Mathf.Cos(Mathf.Deg2Rad * _DirectionRotation), 0, Mathf.Cos(Mathf.Deg2Rad * (_DirectionRotation - 90)));
+        //posible caos si metemos random para direccio
         transform.Rotate(Vector3.up, -90);
     }
 }
