@@ -6,6 +6,12 @@ public class BoardControler : MonoBehaviour {
 
     public List<List<Cell>> _Cells;
     public List<GameObject> _Cards;
+
+    [SerializeField]
+    private List<GameObject> _PlayersPointersPrefab;
+    private List<Transform> _PlayerPointers;
+    [SerializeField]
+    private List<PlayerData> _PlayerData;
     [SerializeField]
     private List<GameObject> _Minioms;
     [SerializeField]
@@ -23,14 +29,20 @@ public class BoardControler : MonoBehaviour {
             }
             i++;
         }
+
+        _PlayerPointers = new List<Transform>();
+        i = 0;
+        foreach(GameObject elem in _PlayersPointersPrefab) {
+            GameObject playPoin = Instantiate(elem, _Cells[0][0].transform.position, Quaternion.identity, this.transform);
+            playPoin.name = "pj"+(i+1).ToString();
+            _PlayerPointers.Add(playPoin.transform);
+            _PlayerData[i].Inicializate(10, 10);
+            i++;
+        }
     }
 
     private void Start() {
-        foreach (GameObject go in _Cards) {
-            int x = Random.Range(0, 9);
-            int y = Random.Range(0, 9);
-            PutCard(go, x, y);
-        }
+
         PutFinish(0, 0, Color.blue);
         InvokeRepeating("test", 0.75f, 1f);
     }
@@ -56,12 +68,34 @@ public class BoardControler : MonoBehaviour {
         miniom.GetComponent<Character>().SetDirection((Direction)Random.Range(0, 4));
     }
 
-    public bool PutCard(GameObject go, int xPos, int yPos) {
+    public Cell PutCard(Direction dir,int player) {
+        int xPos = _PlayerData[player].GetXPosition();
+        int yPos = _PlayerData[player].GetYPosition();
+
         if (!_Cells[xPos][yPos].IsOcupated()) {
-            _Cells[xPos][yPos].SetCard(go);
-            return true;
+            GameObject newCard;
+            switch (dir) {
+                case Direction.UP:
+                   newCard= _PlayerData[player].PutUpCard(_Cells[xPos][yPos]);
+                    break;
+                case Direction.DOWN:
+                    newCard = _PlayerData[player].PutDownCard(_Cells[xPos][yPos]);
+                    break;
+                case Direction.LEFT:
+                    newCard = _PlayerData[player].PutLeftCard(_Cells[xPos][yPos]);
+                    break;
+                case Direction.RIGTH:
+                    newCard = _PlayerData[player].PutRightCard(_Cells[xPos][yPos]);
+                    break;
+                default:
+                    newCard = null;
+                    break;
+            }
+             
+            _Cells[xPos][yPos].SetCard(newCard);
+            return _Cells[xPos][yPos];
         } else
-            return false;
+            return null;
     }
 
     public bool PutFinish(int xPos, int yPos, Color playerColor) {
@@ -75,5 +109,10 @@ public class BoardControler : MonoBehaviour {
 
     public Cell GetCell(int xPos, int yPos) {
         return _Cells[xPos-1][yPos-1];
+    }
+
+    public void MovePj(Direction dir, int pj) {
+        if (_PlayerData[pj].MovePj(dir))
+            _PlayerPointers[pj].transform.position = _Cells[_PlayerData[pj].GetXPosition()][_PlayerData[pj].GetYPosition()].transform.position;
     }
 }

@@ -114,7 +114,4 @@ public class Character : MonoBehaviour {
         transform.Rotate(Vector3.up, -90);
     }
 
-    private void Dead() {
-
-    }
 }

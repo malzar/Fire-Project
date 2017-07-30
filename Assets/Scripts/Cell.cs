@@ -81,10 +81,10 @@ public class Cell : MonoBehaviour {
 
     public void SendMiniomSafe() {
         if (_PointsController)
-            _PointsController.GetComponent<GameObject>();
+            _PointsController.GetComponent<PlayerData>().IncrementScore();
         GameObject part = Instantiate(_Particles);
         part.transform.position = this.transform.position;
-        part.GetComponent<ParticleSystem>().startColor = Color.white;
+        //part.GetComponent<ParticleSystem>().startColor = Color.white;
         Destroy(part, 1.5f);
     }
 }
