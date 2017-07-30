@@ -13,6 +13,8 @@ public class Character : MonoBehaviour {
     private int _DirectionRotation;
     [SerializeField]
     private float _OffsetCard;
+    [SerializeField]
+    private ParticleSystem _Dead;
     private bool _Check;
     // Use this for initialization
     void Start() {
@@ -34,12 +36,12 @@ public class Character : MonoBehaviour {
     }
 
     void OnTriggerStay(Collider other) {
-        if (other.tag == "Cell"&& _Check) {
+        if (other.tag == "Cell" && _Check) {
             Vector3 offset = this.transform.position - other.transform.position;
             float distance = offset.sqrMagnitude;
             if (distance < _OffsetCard) {
                 SetDirection(other.GetComponent<Cell>().GetDirection());
-                this.transform.position = new Vector3(other.transform.position.x, this.transform.position.y, other.transform.position.z);
+                //this.transform.position = new Vector3(other.transform.position.x, this.transform.position.y, other.transform.position.z);
                 _Check = false;
             }
         }
@@ -75,5 +77,9 @@ public class Character : MonoBehaviour {
     private void RotateCharacter() {
         //posible caos si metemos random para direccio
         transform.Rotate(Vector3.up, -90);
+    }
+
+    private void Dead() {
+
     }
 }
