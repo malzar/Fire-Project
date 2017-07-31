@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(PlayerController))]
 public class Player : MonoBehaviour {
@@ -14,23 +11,21 @@ public class Player : MonoBehaviour {
     [SerializeField]
     BoardControler _Board;
     [SerializeField]
-    private Text _ScoreText;
-    [SerializeField]
     private int _NumOfUpCard;
-
     [SerializeField]
     private int _NumOfDownCard;
-
     [SerializeField]
     private int _NumOfLeftCard;
-
     [SerializeField]
     private int _NumOfRightCard;
+    [SerializeField]
+    private Color _PlayerColor;
 
     private Deck _DownDeck;
     private Deck _LeftDeck;
     private Deck _RightDeck;
     private Deck _UpDeck;
+    private bool _FisnisCell;
 
     void Awake() {
         _LeftDeck = this.transform.Find("DeckLeft").GetComponent<Deck>();
@@ -41,6 +36,14 @@ public class Player : MonoBehaviour {
         Ininitialize(10,10,0);
     }
 
+    public Color GetPlayerColor() {
+        return _PlayerColor;
+    }
+
+    public int GetPlayerNumber() {
+        return _PlayerNumber;
+    }
+
     public void Ininitialize(int boardSizeX, int boardSiceY, int playerNumber) {
         _Data = new PlayerData(boardSizeX,boardSiceY);
         //_PlayerNumber = playerNumber;
@@ -48,14 +51,39 @@ public class Player : MonoBehaviour {
         _RightDeck.SetNumberOfCard(_NumOfRightCard);
         _UpDeck.SetNumberOfCard(_NumOfUpCard);
         _DownDeck.SetNumberOfCard(_NumOfDownCard);
+        _FisnisCell = false;
     }
 
-    public void PutCard(Direction dir) {
+    public void ButtonPresed(Direction dir) {
+        BoardStates boardState = _Board.GetState();
+        if (boardState == BoardStates.PUSHING_FINISH_CELL && !_FisnisCell) {
+            _Board.PutFinish(GetCursorX(), GetCursorY(), this);
+            _FisnisCell = true;
+        }else if(boardState == BoardStates.GAMING|| _Board.GetState() == BoardStates.END) {
+            PutCard(dir);
+        }
+    }
+
+    public void IncrementScore() {
+        _Data.IncrementScore();
+        _Board.SetScore(_Data.GetScore(),_PlayerNumber);
+    }
+
+    public void MoveCursor(Direction dir) {
+        if (_Data.MoveCursor(dir)) {
+            _Board.MovePlayerCursor(_PlayerNumber, GetCursorX(), GetCursorY());
+        }
+    }
+
+    public int GetCursorX() { return _Data.GetXPosition(); }
+    public int GetCursorY() { return _Data.GetYPosition(); }
+
+    private void PutCard(Direction dir) {
         GameObject cardToUse;
         Cell cellToUse;
         switch (dir) {
             case Direction.UP:
-                cardToUse = _UpDeck.GetCard(_PlayerNumber);                
+                cardToUse = _UpDeck.GetCard(_PlayerNumber);
                 break;
             case Direction.DOWN:
                 cardToUse = _DownDeck.GetCard(_PlayerNumber);
@@ -89,18 +117,4 @@ public class Player : MonoBehaviour {
                 break;
         }
     }
-
-    public void IncrementScore() {
-        _Data.IncrementScore();
-        _ScoreText.text = _Data.GetScore().ToString();
-    }
-
-    public void MoveCursor(Direction dir) {
-        if (_Data.MoveCursor(dir)) {
-            _Board.MovePlayerCursor(_PlayerNumber, GetCursorX(), GetCursorY());
-        }
-    }
-
-    public int GetCursorX() { return _Data.GetXPosition(); }
-    public int GetCursorY() { return _Data.GetYPosition(); }
 }

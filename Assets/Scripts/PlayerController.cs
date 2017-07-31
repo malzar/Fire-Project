@@ -45,16 +45,16 @@ public class PlayerController : MonoBehaviour {
             _Player.MoveCursor(Direction.RIGTH);
 
         if (Input.GetKeyDown(_UpCard))
-            _Player.PutCard(Direction.UP);
+            _Player.ButtonPresed(Direction.UP);
 
         if (Input.GetKeyDown(_DownCard))
-            _Player.PutCard(Direction.DOWN);
+            _Player.ButtonPresed(Direction.DOWN);
 
         if (Input.GetKeyDown(_LeftCard))
-            _Player.PutCard(Direction.LEFT);
+            _Player.ButtonPresed(Direction.LEFT);
 
         if (Input.GetKeyDown(_RightCard))
-            _Player.PutCard(Direction.RIGTH);
+            _Player.ButtonPresed(Direction.RIGTH);
 
     }
 }

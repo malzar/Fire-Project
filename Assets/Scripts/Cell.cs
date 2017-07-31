@@ -19,8 +19,7 @@ public class Cell : MonoBehaviour {
     private Points _PointsController;
     [SerializeField]
     private GameObject _Particles;
-    [SerializeField]
-    private Color _PlayerColor;
+    private Player _PlayerAsociated;
 
     public CELLTYPE GetTipe() { return _Type; }
 
@@ -63,8 +62,8 @@ public class Cell : MonoBehaviour {
         transform.GetComponent<BoxCollider>().isTrigger = true;    
     }
 
-    public void SetFinish(Color playerColor, GameObject particles) {
-        _PlayerColor = playerColor;
+    public void SetFinish(Player player, GameObject particles) {
+        _PlayerAsociated= player;
         _Particles = particles;
         _Type = CELLTYPE.FINISH;
         this.transform.tag = "FinishCell";
@@ -76,12 +75,12 @@ public class Cell : MonoBehaviour {
         ligthComp.type = LightType.Spot;
         ligthComp.range = 20f;
         ligthComp.spotAngle = 40;
-        ligthComp.color = playerColor;
+        ligthComp.color = player.GetPlayerColor();
     }
 
     public void SendMiniomSafe() {
-        if (_PointsController)
-            _PointsController.GetComponent<PlayerData>().IncrementScore();
+        if (_PlayerAsociated)
+            _PlayerAsociated.IncrementScore();
         GameObject part = Instantiate(_Particles);
         part.transform.position = this.transform.position;
         //part.GetComponent<ParticleSystem>().startColor = Color.white;
