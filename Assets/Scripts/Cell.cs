@@ -45,7 +45,7 @@ public class Cell : MonoBehaviour {
 
     public void RemoveCard() {
         _ActualCard = null;
-        this.transform.tag = "";
+        this.transform.tag = "Untagged";
         transform.GetComponent<BoxCollider>().isTrigger = false;
     }
 

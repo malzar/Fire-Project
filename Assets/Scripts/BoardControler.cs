@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum BoardStates {
+    WATING_PLAYER=0,
+    PUSHING_FINIS_CELL=1,
+    GAMING=2
+}
+
 public class BoardControler : MonoBehaviour {
 
     public List<List<Cell>> _Cells;
@@ -9,9 +15,7 @@ public class BoardControler : MonoBehaviour {
 
     [SerializeField]
     private List<GameObject> _PlayersPointersPrefab;
-    private List<Transform> _PlayerPointers;
-    [SerializeField]
-    private List<PlayerData> _PlayerData;
+    private List<Transform> _PlayerCursor;
     [SerializeField]
     private List<GameObject> _Minioms;
     [SerializeField]
@@ -30,13 +34,12 @@ public class BoardControler : MonoBehaviour {
             i++;
         }
 
-        _PlayerPointers = new List<Transform>();
+        _PlayerCursor = new List<Transform>();
         i = 0;
         foreach(GameObject elem in _PlayersPointersPrefab) {
-            GameObject playPoin = Instantiate(elem, _Cells[0][0].transform.position, Quaternion.identity, this.transform);
-            playPoin.name = "pj"+(i+1).ToString();
-            _PlayerPointers.Add(playPoin.transform);
-            _PlayerData[i].Inicializate(10, 10);
+            GameObject playCursor = Instantiate(elem, _Cells[0][0].transform.position, Quaternion.identity, this.transform);
+            playCursor.name = "pj"+(i+1).ToString();
+            _PlayerCursor.Add(playCursor.transform);
             i++;
         }
     }
@@ -53,47 +56,24 @@ public class BoardControler : MonoBehaviour {
     // Update is called once per frame
     bool once = true;
 	void Update () {
-        if (once) {
-            for (int i = 0; i < 20; i++) {
-                Invoke("test", 0.75f);
-            }
-            once = false;
-        }
 
 	}
 
-    public void InstantiateMinon(int xPos, int yPos) {
-        GameObject miniom = Instantiate(_Minioms[Random.Range(0,_Minioms.Count)], this.transform);
-        miniom.transform.position = _Cells[xPos][yPos].transform.position;
-        miniom.GetComponent<Character>().SetDirection((Direction)Random.Range(0, 4));
+    public bool InstantiateMinon(int xPos, int yPos) {
+        if (!_Cells[xPos][yPos].IsOcupated()) {
+            GameObject miniom = Instantiate(_Minioms[Random.Range(0, _Minioms.Count)], this.transform);
+            miniom.transform.position = _Cells[xPos][yPos].transform.position;
+            miniom.GetComponent<Character>().SetDirection((Direction)Random.Range(0, 4));
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Cell PutCard(Direction dir,int player) {
-        int xPos = _PlayerData[player].GetXPosition();
-        int yPos = _PlayerData[player].GetYPosition();
-
-        if (!_Cells[xPos][yPos].IsOcupated()) {
-            GameObject newCard;
-            switch (dir) {
-                case Direction.UP:
-                   newCard= _PlayerData[player].PutUpCard(_Cells[xPos][yPos]);
-                    break;
-                case Direction.DOWN:
-                    newCard = _PlayerData[player].PutDownCard(_Cells[xPos][yPos]);
-                    break;
-                case Direction.LEFT:
-                    newCard = _PlayerData[player].PutLeftCard(_Cells[xPos][yPos]);
-                    break;
-                case Direction.RIGTH:
-                    newCard = _PlayerData[player].PutRightCard(_Cells[xPos][yPos]);
-                    break;
-                default:
-                    newCard = null;
-                    break;
-            }
-             
-            _Cells[xPos][yPos].SetCard(newCard);
-            return _Cells[xPos][yPos];
+    public Cell PutCard(int player, int CursorX, int CursorY, GameObject newCard) {
+        if (!_Cells[CursorX][CursorY].IsOcupated()) {                         
+            _Cells[CursorX][CursorY].SetCard(newCard);
+            return _Cells[CursorX][CursorY];
         } else
             return null;
     }
@@ -107,12 +87,12 @@ public class BoardControler : MonoBehaviour {
         }
     }
 
-    public Cell GetCell(int xPos, int yPos) {
+    
+    public bool CellOcupated(int xPos, int yPos) {
         return _Cells[xPos-1][yPos-1];
     }
 
-    public void MovePj(Direction dir, int pj) {
-        if (_PlayerData[pj].MovePj(dir))
-            _PlayerPointers[pj].transform.position = _Cells[_PlayerData[pj].GetXPosition()][_PlayerData[pj].GetYPosition()].transform.position;
+    public void MovePlayerCursor(int pj, int CursorX, int CursorY) {
+            _PlayerCursor[pj].transform.position = _Cells[CursorX][CursorY].transform.position;
     }
 }
